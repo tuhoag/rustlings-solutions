@@ -14,8 +14,6 @@
 // Execute `rustlings hint hashmaps3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 use std::collections::HashMap;
 
 // A structure to store the goal details of a team.
@@ -39,8 +37,88 @@ fn build_scores_table(results: String) -> HashMap<String, Team> {
         // will be the number of goals conceded from team_2, and similarly
         // goals scored by team_2 will be the number of goals conceded by
         // team_1.
+
+        // this is the normal way like other languages
+        // let team_1 = scores.get_mut(&team_1_name);
+
+        // if team_1.is_none() {
+        //     let team_1 = Team {
+        //         name: team_1_name.clone(),
+        //         goals_scored: team_1_score,
+        //         goals_conceded: team_2_score,
+        //     };
+
+        //     scores.insert(team_1_name, team_1);
+        // } else {
+        //     let mut team_1 = team_1.unwrap();
+        //     team_1.goals_scored += team_1_score;
+        //     team_1.goals_conceded += team_2_score;
+        // }
+
+        // let team_2 = scores.get_mut(&team_2_name);
+
+        // if team_2.is_none() {
+        //     let team_2 = Team {
+        //         name: team_2_name.clone(),
+        //         goals_scored: team_2_score,
+        //         goals_conceded: team_1_score,
+        //     };
+
+        //     scores.insert(team_2_name, team_2);
+        // } else {
+        //     let mut team_2 = team_2.unwrap();
+        //     team_2.goals_scored += team_2_score;
+        //     team_2.goals_conceded += team_1_score;
+        // }
+
+        // this is rust-way with entry
+        // let team_1 = scores
+        //     .entry(team_1_name.to_string())
+        //     .and_modify(|team| {
+        //         team.goals_scored += team_1_score;
+        //         team.goals_conceded += team_2_score;
+        //     })
+        //     .or_insert(Team {
+        //         name: team_1_name.clone(),
+        //         goals_scored: team_1_score,
+        //         goals_conceded: team_2_score,
+        //     });
+
+        // let team_2 = scores
+        //     .entry(team_2_name.to_string())
+        //     .and_modify(|team| {
+        //         team.goals_scored += team_2_score;
+        //         team.goals_conceded += team_1_score;
+        //     })
+        //     .or_insert(Team {
+        //         name: team_1_name.clone(),
+        //         goals_scored: team_2_score,
+        //         goals_conceded: team_1_score,
+        //     });
+
+        // new function way
+        update_team_scores(&mut scores, team_1_name.to_string(), team_1_score, team_2_score);
+        update_team_scores(&mut scores, team_2_name.to_string(), team_2_score, team_1_score);
     }
     scores
+}
+
+fn update_team_scores(
+    scores: &mut HashMap<String, Team>,
+    team_name: String,
+    goal_score: u8,
+    goal_conceded: u8,
+) {
+    scores
+        .entry(team_name)
+        .and_modify(|team| {
+            team.goals_scored += goal_score;
+            team.goals_conceded += goal_conceded;
+        })
+        .or_insert(Team {
+            goals_scored: goal_score,
+            goals_conceded: goal_conceded,
+        });
 }
 
 #[cfg(test)]
